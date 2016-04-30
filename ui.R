@@ -6,8 +6,8 @@ library(dplyr)
 
 check<-list()
 
-names<-as.vector(HammerAtlas(exclude='VBM_Hammer')[,1])
-codes<-as.numeric(as.vector(HammerAtlas(exclude='VBM_Hammer')[,2]))
+names<-as.vector(Atlas()[,1])
+codes<-as.numeric(as.vector(Atlas()[,2]))
 
 for (i in 1:length(names)) {
   check[[paste(names[i], as.character(i),sep=" - ") ]]<-codes[i]
@@ -15,15 +15,8 @@ for (i in 1:length(names)) {
 
 
 
-
-snp<-c("APOE4","PICALM_rs10792832_G",  "CELF1_rs10838725_C", 
-       "CD2AP_rs10948363_G" ,  "SORL1_rs11218343_T" ,  "EPHA1_rs11771145_G"  , "ZCWPW1_rs1476679_T"  ,
-       "FERMT2_rs17125944_C" , "MEF2C_rs190982_A"  ,   "NME8_rs2718058_A" ,    "PTK2B_rs28834970_C" ,  "INPP5D_rs35349669_T" , "ABCA7_rs4147929_A" ,  
-       "CR1_rs6656401_A" ,     "BIN1_rs6733839_T" ,    "CASS4_rs7274581_T",    "CLU_rs9331896_T" ,     "MS4A6A_rs983392_A" ,   "SLC24A4_rs10498633_G")
-
-
 choose<-list()
-for (i in 1:length(snp)) {choose[[snp[i]]]<-i}
+for (i in 1:length(maps)) {choose[[maps[i]]]<-i}
 
 shinyUI(navbarPage(
   
@@ -94,7 +87,7 @@ shinyUI(navbarPage(
                            choices = check, selected = 1),
                
                checkboxGroupInput("checkGroup2",
-                                  label = h3("Delete SNPs"), 
+                                  label = h3("Delete map"), 
                                   choices = choose #, selected=5
                                   )
                

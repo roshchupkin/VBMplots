@@ -8,7 +8,7 @@ source("helper.R")
 shinyServer(function(input, output) {
   
   
-  data_frame1<-reactive( { Read_p_values(input$select, study_name='RS_VBM') } )
+  data_frame1<-reactive( { Read_data(input$select) } )
   
   
   observe({
@@ -21,13 +21,13 @@ shinyServer(function(input, output) {
     
     ggvis_plot(data_frame1(),roi[1], roi[2] , th, del,
                "Brain Manhattan plot. 
-               Every dot is a single voxel from gray matter.Right corner: resize plot; mouse: tooltips", 
-               study_name='RS_VBM' )%>% bind_shiny("plot")
+               Every dot is a single voxel from gray matter.Right corner: resize plot; mouse: tooltips" 
+                )%>% bind_shiny("plot")
     
   })
   
   
-  data_frame2<-reactive( { Read_p_values_per_region(input$select2 ) } )
+  data_frame2<-reactive( { Read_region_data(input$select2 ) } )
   
   
   vis2<-reactive({
@@ -37,7 +37,7 @@ shinyServer(function(input, output) {
     del2<-input$checkGroup2
     
     ggvis_plot_region(data_frame2(),th2, del2, 
-    "Brain Manhattan plot. Effect of all AD SNPs shown for the same voxels from selected brain regions." )
+    "Brain Manhattan plot. Effect from all maps shown for the same voxels from selected brain regions." )
     
   })
   
