@@ -22,9 +22,6 @@ snp<-c("APOE4","PICALM_rs10792832_G",  "CELF1_rs10838725_C",
        "CR1_rs6656401_A" ,     "BIN1_rs6733839_T" ,    "CASS4_rs7274581_T",    "CLU_rs9331896_T" ,     "MS4A6A_rs983392_A" ,   "SLC24A4_rs10498633_G")
 
 
-
-
-
 choose<-list()
 for (i in 1:length(snp)) {choose[[snp[i]]]<-i}
 
