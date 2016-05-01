@@ -29,7 +29,7 @@ shinyUI(navbarPage(
              sidebarPanel(
                
                numericInput("num", 
-                            label = h3("Set p value threshold"), 
+                            label = h3("Set value threshold"), 
                             value = 3),
                
                helpText("Choose Brain Regions to display on plot"),
@@ -40,8 +40,8 @@ shinyUI(navbarPage(
                
                
                
-               selectInput("select", label = h3("Select SNPs"), 
-                           choices = choose, selected = 3),
+               selectInput("select", label = h3("Select map"), 
+                           choices = choose, selected = 1),
                
                
                checkboxGroupInput("checkGroup",

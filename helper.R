@@ -1,10 +1,10 @@
 
 library(oro.nifti)
-
+library(dplyr)
 result_path<<-paste(getwd(),'/data/results/',sep='')
 data_frame_path<<-paste(getwd(),'/data_frames/',sep='')
 maps<<-dir(result_path)
-atlas_path<<-''
+atlas_path<<-paste(getwd(),'/data/Atlas.nii.gz',sep='')
 
 
 #################################################################################
@@ -18,14 +18,56 @@ Atlas<-function() {
     
     result<-data.frame(name, code, rainbow(length(t[,1])))
     
-    colnames(result)<-c('names','code', 'colors')
+    colnames(result)<-c('Region_name','codes', 'color')
     
     return (result)
 
   
 }
 ###############################################################################
+Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
+  
+  
+  if (is.null(atlas_name)) {
+    Atlas_image<-readNIfTI(file.path(atlas_path))
+  }
+  
+  data_frame<-list()
+  
+  file_name<-dir(paste(result_path,name,sep = ''))
+  I<-readNIfTI(file.path(result_path,name,file_name))
+  I<-as.vector(I)
+  Atlas_image<-as.vector(Atlas_image)
+  
+  I<-I[Atlas_image!=0]
+  Atlas_image<-Atlas_image[Atlas_image!=0]
+  
+  data_frame[['data_values']]<-I
+  data_frame[['codes']]<-Atlas_image
+
+  
+  result<-merge(data_frame,df_atlas, by.y=c('codes'), by.x=c('codes') )
+  print (head(result))
+
+#   data_frame[['Region_names']]<-c(NA)
+#   data_frame[['color']]<-c(NA)
+#   
+#   for (i in 1:length(df_atlas[,1]) ) {      
+#     print (i)
+#     data_frame[['Region_name']][ which(data_frame[['codes']]==df_atlas[i,2]) ]<-df_atlas[i,1]
+#     data_frame[['color']][ which(data_frame[['codes']]==df_atlas[i,2]) ]<-df_atlas[i,3]
+#     
+#   }
+
+  return(result)
+  
+  
+}
+
+##############################################################################
 Get_region_data<-function(name=NULL,region_code=NULL, atlas_name=NULL){
+  
+  print (c(name,region_code))
   
   if (is.null(atlas_name)) {
     Atlas_image<-readNIfTI(file.path(atlas_path))
@@ -51,18 +93,21 @@ Read_region_data<-function(region_code,data_type='p-value', atlas_name=NULL){
     
     d<-Get_region_data(name=maps[i],region_code=region_code ) 
     data_frame[['data_values']]<-c( data_frame[['data_values']], d )
-    data_frame[['names']]<-rep( maps[i], length(d) )
-    data_frame[['codes']]<-rep( i, length(d)  )
+    data_frame[['names']]<-c(data_frame[['names']], rep( maps[i], length(d) ) )
+    data_frame[['codes']]<-c(data_frame[['codes']],rep( i, length(d)  ) )
     
-                            }
+  }
+  data_frame<-data.frame(data_frame)
+  
   data_frame[['order']]=1:nrow(data_frame)
   data_frame[['names']]<-factor(data_frame[['names']])
   
   data_frame<-data.frame(data_frame)
   
   if (data_type=='p-value')  {data_frame[['data_values']] = -log10(data_frame[['data_values']])}
-
-  return (data_frame_data_values)
+  
+  print (head(data_frame))
+  return (data_frame)
   
 }
 
@@ -88,8 +133,8 @@ ggvis_plot_region<-function(data_frame, threshold , delete, name) {
   
   
   df_new %>%
-    ggvis(x=~order, y=~p_values, fill=~SNPs) %>%
-    add_legend( c("p_values", "fill"))%>%
+    ggvis(x=~order, y=~data_values, fill=~names) %>%
+    add_legend( c("values", "fill"))%>%
     add_axis("x", orient = "top", ticks = 0, title = name,
              properties = axis_props(
                axis = list(stroke = "white"),
@@ -104,28 +149,14 @@ ggvis_plot_region<-function(data_frame, threshold , delete, name) {
   
 }
 #########################################################
-Read_data<-function(map, atlas=NULL,data_type='p-value', atlas_name=NULL){
+Read_data<-function(map_index, atlas=NULL,data_type='p-value', atlas_name=NULL){
   
   atlas<-Atlas()
-
-  data_frame<-list()
-  data_frame[['data_values']]<-vector()
-  data_frame[['Region_names']]<-vector()
-  data_frame[['codes']]<-vector()
-  data_frame[['color']]<-vector()
   
+  data_frame<-Get_data(maps[as.numeric(map_index)], df_atlas = atlas )
   
-  for (i in 1:length(atlas[,1]) ) {      
-    
-    d<-Get_region_data(name=map,region_code=atlas[i,2]) 
-    data_frame[['data_values']]<-c( data_frame[['data_values']], d )
-    data_frame[['Region_name']]<-rep(atlas[i,1], length(d) )
-    data_frame[['codes']]<-rep( atlas[i,2], length(d)  )
-    data_frame[['color']]<-rep( atlas[i,3], length(d)  )
-    
-                                }
-  
-  
+  #data_frame<-data.frame(data_frame)
+  print (head(data_frame))
   data_frame[['order']]=1:nrow(data_frame)
   data_frame[['Region_name']]<-factor(data_frame[['Region_name']])
   
@@ -133,6 +164,9 @@ Read_data<-function(map, atlas=NULL,data_type='p-value', atlas_name=NULL){
   
   if (data_type=='p-value')  {data_frame[['data_values']] = -log10(data_frame[['data_values']])}
  
+  
+  data_frame<-data.frame(data_frame)
+  
   return (data_frame)
   
   
@@ -161,7 +195,7 @@ ggvis_plot<-function(data_frame, min_c, max_c, threshold , delete, name) {
   df_new$Region_name<-rn
 
   df_new %>%
-    ggvis(x=~order, y=~p_values, fill=~Region_name, key:=~order) %>%
+    ggvis(x=~order, y=~data_values, fill=~Region_name, key:=~order) %>%
     add_axis("x", title = "Voxels")%>%
     add_axis("x", orient = "top", ticks = 0, title = name,
              properties = axis_props(
