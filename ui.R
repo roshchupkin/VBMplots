@@ -58,12 +58,7 @@ shinyUI(navbarPage(
              
              mainPanel(
                
-               
-               ggvisOutput("plot")
-               
-               
-               
-               
+              ggvisOutput("plot")
              )
              
              

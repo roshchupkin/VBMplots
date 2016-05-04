@@ -20,6 +20,9 @@ Atlas<-function() {
     
     colnames(result)<-c('Region_name','codes', 'color')
     
+    result[['Region_name']]<-as.character(result[['Region_name']])
+    result[['codes']]<-as.numeric(result[['codes']])
+    
     return (result)
 
   
@@ -36,8 +39,8 @@ Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
   
   file_name<-dir(paste(result_path,name,sep = ''))
   I<-readNIfTI(file.path(result_path,name,file_name))
-  I<-as.vector(I)
-  Atlas_image<-as.vector(Atlas_image)
+  I=1-as.numeric(as.vector(I))
+  Atlas_image<-as.numeric(as.vector(Atlas_image))
   
   I<-I[Atlas_image!=0]
   Atlas_image<-Atlas_image[Atlas_image!=0]
@@ -48,16 +51,6 @@ Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
   
   result<-merge(data_frame,df_atlas, by.y=c('codes'), by.x=c('codes') )
   print (head(result))
-
-#   data_frame[['Region_names']]<-c(NA)
-#   data_frame[['color']]<-c(NA)
-#   
-#   for (i in 1:length(df_atlas[,1]) ) {      
-#     print (i)
-#     data_frame[['Region_name']][ which(data_frame[['codes']]==df_atlas[i,2]) ]<-df_atlas[i,1]
-#     data_frame[['color']][ which(data_frame[['codes']]==df_atlas[i,2]) ]<-df_atlas[i,3]
-#     
-#   }
 
   return(result)
   
@@ -74,13 +67,13 @@ Get_region_data<-function(name=NULL,region_code=NULL, atlas_name=NULL){
                             }
   
   file_name<-dir(paste(result_path,name,sep = ''))
-  I<-readNIfTI(file.path(result_path,name,file_name))
-  d<-I[Atlas_image==region_code]
+  I=1-readNIfTI(file.path(result_path,name,file_name))
+  d<-as.numeric(I[Atlas_image==region_code])
   return(d)
   
 }
 ###############################################################################
-Read_region_data<-function(region_code,data_type='p-value', atlas_name=NULL){
+Read_region_data<-function(region_code, data_type='p-value', atlas_name=NULL){
   
 
   data_frame<-list()
@@ -104,7 +97,9 @@ Read_region_data<-function(region_code,data_type='p-value', atlas_name=NULL){
   
   data_frame<-data.frame(data_frame)
   
-  if (data_type=='p-value')  {data_frame[['data_values']] = -log10(data_frame[['data_values']])}
+  if (data_type=='p-value')  {
+      data_frame[['data_values']] = -log10(data_frame[['data_values']])
+    }
   
   print (head(data_frame))
   return (data_frame)
@@ -131,6 +126,7 @@ ggvis_plot_region<-function(data_frame, threshold , delete, name) {
   rn<-as.vector(df_new$SNPs)
   df_new$SNPs<-rn
   
+  print (head(df_new))
   
   df_new %>%
     ggvis(x=~order, y=~data_values, fill=~names) %>%
@@ -145,7 +141,8 @@ ggvis_plot_region<-function(data_frame, threshold , delete, name) {
       row<-x[,-1]
       paste0(names(row), ": ", format(row), collapse = "<br />")
     }, "hover" )%>%
-    layer_points()
+    layer_points()%>%
+    set_options(width = 1000, height = 600)
   
 }
 #########################################################
@@ -154,15 +151,16 @@ Read_data<-function(map_index, atlas=NULL,data_type='p-value', atlas_name=NULL){
   atlas<-Atlas()
   
   data_frame<-Get_data(maps[as.numeric(map_index)], df_atlas = atlas )
-  
-  #data_frame<-data.frame(data_frame)
+
   print (head(data_frame))
   data_frame[['order']]=1:nrow(data_frame)
   data_frame[['Region_name']]<-factor(data_frame[['Region_name']])
   
   data_frame<-data.frame(data_frame)
   
-  if (data_type=='p-value')  {data_frame[['data_values']] = -log10(data_frame[['data_values']])}
+  if (data_type=='p-value')  {
+    data_frame[['data_values']] = -log10(data_frame[['data_values']])
+  }
  
   
   data_frame<-data.frame(data_frame)
@@ -194,6 +192,8 @@ ggvis_plot<-function(data_frame, min_c, max_c, threshold , delete, name) {
   
   df_new$Region_name<-rn
 
+  print (head(df_new))
+  
   df_new %>%
     ggvis(x=~order, y=~data_values, fill=~Region_name, key:=~order) %>%
     add_axis("x", title = "Voxels")%>%
@@ -204,10 +204,11 @@ ggvis_plot<-function(data_frame, min_c, max_c, threshold , delete, name) {
     add_axis("y", title = "-log10(p)") %>%
     add_tooltip(function(x) {
       if(is.null(x)) return(NULL)
-      row <- df_new[df_new$order == x$order,1:2]
+      row <- df_new[df_new$order == x$order,2:3]
       paste0(names(row), ": ", format(row), collapse = "<br />")
     }, "hover")%>%
-    layer_points()
+    layer_points()%>%
+    set_options(width = 1000, height = 600)
   
   
   
