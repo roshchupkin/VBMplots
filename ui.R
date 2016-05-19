@@ -41,7 +41,7 @@ shinyUI(navbarPage(
                
                
                selectInput("select", label = h3("Select map"), 
-                           choices = choose, selected = 1),
+                           choices = choose, selected = 2),
                
                
                checkboxGroupInput("checkGroup",
@@ -69,33 +69,33 @@ shinyUI(navbarPage(
   
   
   tabPanel("Brain Region Manhattan plot",
-           
+
            sidebarLayout(
-             
+
              sidebarPanel(
-               
-               numericInput("num2", 
-                            label = h3("Set p value threshold"), 
+
+               numericInput("num2",
+                            label = h3("Set p value threshold"),
                             value = 2),
-               
-               selectInput("select2", label = h3("Select Brain Region"), 
+
+               selectInput("select2", label = h3("Select Brain Region"),
                            choices = check, selected = 1),
-               
+
                checkboxGroupInput("checkGroup2",
-                                  label = h3("Delete map"), 
+                                  label = h3("Delete map"),
                                   choices = choose #, selected=5
                                   )
-               
+
                         ),
-             
+
              mainPanel(
-               ggvisOutput("plot2")    
+               ggvisOutput("plot2")
                       )
-             
+
                     )
-           
+
   )
-  
+
   
   ) )
 

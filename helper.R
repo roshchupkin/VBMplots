@@ -4,7 +4,7 @@ library(dplyr)
 result_path<<-paste(getwd(),'/data/results/',sep='')
 data_frame_path<<-paste(getwd(),'/data_frames/',sep='')
 maps<<-dir(result_path)
-atlas_path<<-paste(getwd(),'/data/Atlas.nii.gz',sep='')
+atlas_path<<-paste(getwd(),'/data/atlas/Atlas.nii.gz',sep='')
 
 
 #################################################################################
@@ -28,18 +28,25 @@ Atlas<-function() {
   
 }
 ###############################################################################
-Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
-  
+Read_atlas_image<-function(atlas_name=NULL){
   
   if (is.null(atlas_name)) {
     Atlas_image<-readNIfTI(file.path(atlas_path))
   }
   
+  return(Atlas_image)
+  
+}
+
+###############################################################################
+Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
+  
+  Atlas_image<-Read_atlas_image()
+  
   data_frame<-list()
   
   file_name<-dir(paste(result_path,name,sep = ''))
   I<-readNIfTI(file.path(result_path,name,file_name))
-  I=1-as.numeric(as.vector(I))
   Atlas_image<-as.numeric(as.vector(Atlas_image))
   
   I<-I[Atlas_image!=0]
@@ -47,44 +54,82 @@ Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
   
   data_frame[['data_values']]<-I
   data_frame[['codes']]<-Atlas_image
-
   
+  t1<-Sys.time()
   result<-merge(data_frame,df_atlas, by.y=c('codes'), by.x=c('codes') )
-  print (head(result))
+  print (Sys.time()-t1)
 
   return(result)
   
   
 }
+####################################################################################
+Read_data<-function(map_index, atlas=NULL,data_type='p-value', atlas_name=NULL){
+  
+  atlas<-Atlas()
+  
+  
+  t1<-Sys.time()
+  data_frame<-Get_data(maps[as.numeric(map_index)], df_atlas = atlas )
+  
+  
+  data_frame[['order']]=1:nrow(data_frame)
+  data_frame[['Region_name']]<-factor(data_frame[['Region_name']])
 
+  if (data_type=='p-value')  {
+    index=which(data_frame[['data_values']]!=0)
+    data_frame[['data_values']][index] = -log10(data_frame[['data_values']][index])
+  }
+  
+  print(Sys.time() - t1)
+  
+  return (data_frame)
+  
+  
+}
 ##############################################################################
-Get_region_data<-function(name=NULL,region_code=NULL, atlas_name=NULL){
+Get_region_coordinates<-function(region_code=NULL, atlas_name=NULL){
+  
+  Atlas_image<-Read_atlas_image()
+  
+  index<-which(Atlas_image==region_code)
+  
+  return(index)  
+  
+}
+##############################################################################
+Get_region_data<-function(name=NULL,region_code=NULL, atlas_name=NULL, index=NULL){
   
   print (c(name,region_code))
   
-  if (is.null(atlas_name)) {
-    Atlas_image<-readNIfTI(file.path(atlas_path))
-                            }
-  
+  if (is.null(index)) {
+    Atlas_image<-Read_atlas_image()
+    index<-which(Atlas_image==region_code)
+                      }
+
   file_name<-dir(paste(result_path,name,sep = ''))
-  I=1-readNIfTI(file.path(result_path,name,file_name))
-  d<-as.numeric(I[Atlas_image==region_code])
+  I=readNIfTI(file.path(result_path,name,file_name))
+  t1<-Sys.time()
+  d<-I[index]
+  print (paste("Time to read one region data...",as.character(Sys.time()- t1),sep='' ))
   return(d)
   
 }
 ###############################################################################
 Read_region_data<-function(region_code, data_type='p-value', atlas_name=NULL){
   
-
+  t1<-Sys.time()
+  
   data_frame<-list()
   data_frame[['data_values']]<-vector()
   data_frame[['names']]<-vector()
   data_frame[['codes']]<-vector()
   
+  index<-Get_region_coordinates(region_code = region_code)
   
   for (i in 1:length(maps)){
     
-    d<-Get_region_data(name=maps[i],region_code=region_code ) 
+    d<-Get_region_data(name=maps[i],region_code=region_code, index = index ) 
     data_frame[['data_values']]<-c( data_frame[['data_values']], d )
     data_frame[['names']]<-c(data_frame[['names']], rep( maps[i], length(d) ) )
     data_frame[['codes']]<-c(data_frame[['codes']],rep( i, length(d)  ) )
@@ -98,10 +143,11 @@ Read_region_data<-function(region_code, data_type='p-value', atlas_name=NULL){
   data_frame<-data.frame(data_frame)
   
   if (data_type=='p-value')  {
-      data_frame[['data_values']] = -log10(data_frame[['data_values']])
+    index=which(data_frame[['data_values']]!=0)
+    data_frame[['data_values']][index] = -log10(data_frame[['data_values']][index])
     }
   
-  print (head(data_frame))
+  print (paste("Time to read regions data...",as.character(Sys.time()- t1),sep='' ))
   return (data_frame)
   
 }
@@ -125,9 +171,7 @@ ggvis_plot_region<-function(data_frame, threshold , delete, name) {
   
   rn<-as.vector(df_new$SNPs)
   df_new$SNPs<-rn
-  
-  print (head(df_new))
-  
+
   df_new %>%
     ggvis(x=~order, y=~data_values, fill=~names) %>%
     add_legend( c("values", "fill"))%>%
@@ -145,35 +189,12 @@ ggvis_plot_region<-function(data_frame, threshold , delete, name) {
     set_options(width = 1000, height = 600)
   
 }
-#########################################################
-Read_data<-function(map_index, atlas=NULL,data_type='p-value', atlas_name=NULL){
-  
-  atlas<-Atlas()
-  
-  data_frame<-Get_data(maps[as.numeric(map_index)], df_atlas = atlas )
-
-  print (head(data_frame))
-  data_frame[['order']]=1:nrow(data_frame)
-  data_frame[['Region_name']]<-factor(data_frame[['Region_name']])
-  
-  data_frame<-data.frame(data_frame)
-  
-  if (data_type=='p-value')  {
-    data_frame[['data_values']] = -log10(data_frame[['data_values']])
-  }
- 
-  
-  data_frame<-data.frame(data_frame)
-  
-  return (data_frame)
-  
-  
-}
 ##################################################################################
 ggvis_plot<-function(data_frame, min_c, max_c, threshold , delete, name) {
   
   atlas_codes<-as.numeric(as.vector(Atlas()[,2]))
   
+  print(dim(data_frame))
   
   if (threshold<2) {threshold=2}
   if (threshold>4) {threshold=4}
@@ -183,6 +204,7 @@ ggvis_plot<-function(data_frame, min_c, max_c, threshold , delete, name) {
 
   df_new<<-subset(df, codes>=atlas_codes[min_c] & codes<=atlas_codes[max_c])
   
+  print(dim(df_new))
   
   if (length(delete)!=0){
     for (i in delete) {df_new=subset(df_new, codes!=i)}
@@ -192,8 +214,6 @@ ggvis_plot<-function(data_frame, min_c, max_c, threshold , delete, name) {
   
   df_new$Region_name<-rn
 
-  print (head(df_new))
-  
   df_new %>%
     ggvis(x=~order, y=~data_values, fill=~Region_name, key:=~order) %>%
     add_axis("x", title = "Voxels")%>%

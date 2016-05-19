@@ -27,23 +27,23 @@ shinyServer(function(input, output) {
   })
   
   
-  data_frame2<-reactive( { Read_region_data(input$select2 ) } )
-  
-  
-  vis2<-reactive({
-    
-    th2<-input$num2
-    
-    del2<-input$checkGroup2
-    
-    ggvis_plot_region(data_frame2(),th2, del2, 
-    "Brain Manhattan plot. Effect from all maps shown for the same voxels from selected brain regions." )
-    
-  })
-  
-  
-  vis2 %>% bind_shiny("plot2")
-  
+   data_frame2<-reactive( { Read_region_data(input$select2 ) } )
+
+
+   vis2<-reactive({
+
+     th2<-input$num2
+
+     del2<-input$checkGroup2
+
+     ggvis_plot_region(data_frame2(),th2, del2,
+     "Brain Manhattan plot. Effect from all maps shown for the same voxels from selected brain regions." )
+
+   })
+
+
+   vis2 %>% bind_shiny("plot2")
+
   
   
   })
