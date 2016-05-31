@@ -20,4 +20,4 @@ Check the example: [AD SNPs plots](http://www.roshchupkin.com/adsnps/)
 ## Advanced user
 
 You can easily change the atlas for brain region labeling for you own one (in this case the result image could be in any space and have any resolution).
-Use **Atlas.txt** table as example to make and replace by your own table linked to your Atlas. Then replace  **Atlas.nii.gz** image with youe atlas, where voxel value coded structure from your Atlas table.
+Use **Atlas.txt** table as example to make and replace by your own table linked to your Atlas. Then replace  **Atlas.nii.gz** image with your atlas, where voxel value coded structure from your Atlas table.
