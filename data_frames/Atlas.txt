@@ -1,0 +1,83 @@
+1	Hippocampus right
+2	Hippocampus left
+3	Amygdala right
+4	Amygdala left
+5	Anterior temporal lobe, medial part right
+6	Anterior temporal lobe, medial part left
+7	Anterior temporal lobe, lateral part right
+8	Anterior temporal lobe, lateral part left
+9	Gyri parahippocampalis et ambiens right
+10	Gyri parahippocampalis et ambiens left
+11	Superior temporal gyrus, central part right
+12	Superior temporal gyrus, central part left
+13	Medial and inferior temporal gyri right
+14	Medial and inferior temporal gyri left
+15	Lateral occipitotemporal gyrus (gyrus fusiformis) right
+16	Lateral occipitotemporal gyrus (gyrus fusiformis) left
+17	Cerebellum right
+18	Cerebellum left
+19	Brainstem (spans the midline)
+20	Insula left
+21	Insula right
+22	Lateral remainder of occipital lobe left
+23	Lateral remainder of occipital lobe right
+24	Cingulate gyrus, anterior (supragenual) part left
+25	Cingulate gyrus, anterior (supragenual) part right
+26	Cingulate gyrus, posterior part left
+27	Cingulate gyrus, posterior part right
+28	Middle frontal gyrus left
+29	Middle frontal gyrus right
+30	Posterior temporal lobe left
+31	Posterior temporal lobe right
+32	Remainder of parietal lobe left (including supramarginal and angular gyrus)
+33	Remainder of parietal lobe right (including supramarginal and angular gyrus)
+34	Caudate nucleus left
+35	Caudate nucleus right
+36	Nucleus accumbens left
+37	Nucleus accumbens right
+38	Putamen left
+39	Putamen right
+40	Thalamus left
+41	Thalamus right
+42	Pallidum (globus pallidus) left
+43	Pallidum (globus pallidus) right
+44	Corpus callosum
+45	Lateral ventricle, frontal horn, central part, and occipital horn right
+46	Lateral ventricle, frontal horn, central part, and occipital horn left
+47	Lateral ventricle, temporal horn right
+48	Lateral ventricle, temporal horn left
+49	Third ventricle
+50	Precentral gyrus left
+51	Precentral gyrus right
+52	Straight gyrus (gyrus rectus) left
+53	Straight gyrus (gyrus rectus) right
+54	Anterior orbital gyrus left
+55	Anterior orbital gyrus right
+56	Inferior frontal gyrus left
+57	Inferior frontal gyrus right
+58	Superior frontal gyrus left
+59	Superior frontal gyrus right
+60	Postcentral gyrus left
+61	Postcentral gyrus right
+62	Superior parietal gyrus left
+63	Superior parietal gyrus right
+64	Lingual gyrus left
+65	Lingual gyrus right
+66	Cuneus left
+67	Cuneus right
+68	Medial orbital gyrus left
+69	Medial orbital gyrus right
+70	Lateral orbital gyrus left
+71	Lateral orbital gyrus right
+72	Posterior orbital gyrus left
+73	Posterior orbital gyrus right
+74	Substantia nigra left
+75	Substantia nigra right
+76	Subgenual anterior cingulate gyrus left
+77	Subgenual anterior cingulate gyrus right
+78	Subcallosal area left
+79	Subcallosal area right
+80	Pre-subgenual anterior cingulate gyrus left
+81	Pre-subgenual anterior cingulate gyrus right
+82	Superior temporal gyrus, anterior part left
+83	Superior temporal gyrus, anterior part right
