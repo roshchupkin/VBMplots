@@ -17,8 +17,11 @@ By default VBMplots app asume that image contain p-values therefore apply -log10
 ## How to Run
 
 1) install shiny library : `install.packages('shiny')`
+
 2) import library: `library(shiny)`
+
 3) Navigate to parent directory of **VBMplots** folder and run app: `runApp('VBMplots')`
+
 
 
 ## Example
