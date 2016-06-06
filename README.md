@@ -14,6 +14,13 @@ In **data** folder create new directory **results** and per every nifti image of
 
 By default VBMplots app asume that image contain p-values therefore apply -log10 transformation. To skip transformation step add in your **server.R** file to "Read_region_data" and "Read_data" function additional parameter **data_type='not p-value'**   
 
+## How to Run
+
+1) install shiny library : `install.packages('shiny')`
+2) import library: `library(shiny)`
+3) Navigate to parent directory of **VBMplots** folder and run app: `runApp('VBMplots')`
+
+
 ## Example
 Check the example: [AD SNPs plots](http://www.roshchupkin.com/adsnps/)
 
