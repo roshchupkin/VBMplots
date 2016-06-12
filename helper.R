@@ -46,6 +46,7 @@ Get_data<-function(name=NULL,df_atlas=NULL, atlas_name=NULL){
   data_frame<-list()
   
   file_name<-dir(paste(result_path,name,sep = ''))
+  if (length(file_name)!=1){stop('Result folder should contain only one image file!')}
   I<-readNIfTI(file.path(result_path,name,file_name))
   Atlas_image<-as.numeric(as.vector(Atlas_image))
   
@@ -108,6 +109,7 @@ Get_region_data<-function(name=NULL,region_code=NULL, atlas_name=NULL, index=NUL
                       }
 
   file_name<-dir(paste(result_path,name,sep = ''))
+  if (length(file_name)!=1){stop('Result folder should contain only one image file!')}
   I=readNIfTI(file.path(result_path,name,file_name))
   t1<-Sys.time()
   d<-I[index]
